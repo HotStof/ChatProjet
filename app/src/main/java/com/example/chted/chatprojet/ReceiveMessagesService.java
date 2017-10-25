@@ -1,6 +1,7 @@
 package com.example.chted.chatprojet;
 
-import okhttp3.ResponseBody;
+import com.google.gson.JsonObject;
+import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -11,5 +12,5 @@ import retrofit2.http.Path;
 
 interface ReceiveMessagesService {
     @GET("messages/{username}/{password}")
-    Call<ResponseBody> connect(@Path("username") String username, @Path("password") String password);
+    Call<List<JsonObject>> receive(@Path("username") String username, @Path("password") String password);
 }

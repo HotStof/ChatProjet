@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+
 import java.io.IOException;
 
 import okhttp3.OkHttpClient;
@@ -49,12 +51,15 @@ public class RegisterActivity extends AppCompatActivity {
                 username = usernameForm.getText().toString();
                 password = passwordForm.getText().toString();
                 progressBar.setVisibility(View.VISIBLE );
-                Call<ResponseBody> register = registerService.register(username, password);
+                JsonObject userRegister = new JsonObject();
+                userRegister.addProperty("login",username);
+                userRegister.addProperty("password",password);
+                Call<ResponseBody> register = registerService.register(userRegister);
                 register.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                         if(response.code() == 200){
-                            Intent intent = new Intent(RegisterActivity.this,ChatActivity.class);
+                            Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
                             startActivity(intent);
                             progressBar.setVisibility(View.INVISIBLE );
                         } else{
@@ -89,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RegisterActivity.this,RegisterActivity.class);
+                Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
                 startActivity(intent);
             }
 

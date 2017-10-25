@@ -23,4 +23,6 @@
     <string name="if_you_are_not_register_click_here">If you are not register click here</string>
     <string name="if_you_are_already_register_click_here">if you are already register click here</string>
     <string name="register">register</string>
+    <string name="Send">Send</string>
+    <string name="write_your_message_here">Write your message here</string>
 </resources>

@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import okhttp3.Credentials;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,8 +45,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 username = usernameForm.getText().toString();
                 password = passwordForm.getText().toString();
+                String token = Credentials.basic(username,password);
                 progressBar.setVisibility(View.VISIBLE );
-                Call<ResponseBody> connect = loginService.connect(username, password);
+                Call<ResponseBody> connect = loginService.connect(token);
                 connect.enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

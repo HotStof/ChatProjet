@@ -1,26 +1,23 @@
 package com.example.chted.chatprojet;
 
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.IOException;
+import com.google.gson.JsonObject;
+
+
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by chted on 25/10/2017.
  */
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private List<String> dataset;
+    private List<JsonObject> dataset;
 
     // Provide a reference to the views for each data item
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -33,7 +30,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String login, String  password, List<String> dataset) {
+    public MyAdapter(List<JsonObject> dataset) {
 
         this.dataset = dataset ;
     }
@@ -51,7 +48,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.textView.setText(dataset.get(position));
+        String login=dataset.get(position).get("login").toString();
+        String message=dataset.get(position).get("message").toString();
+        holder.textView.setText(login+" : "+message);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
