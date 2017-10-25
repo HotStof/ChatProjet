@@ -20,4 +20,7 @@
     <string name="username">username</string>
     <string name="login">login</string>
     <string name="wrong_password" />
+    <string name="if_you_are_not_register_click_here">If you are not register click here</string>
+    <string name="if_you_are_already_register_click_here">if you are already register click here</string>
+    <string name="register">register</string>
 </resources>
