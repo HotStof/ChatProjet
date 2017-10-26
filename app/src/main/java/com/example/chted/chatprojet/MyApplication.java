@@ -1,7 +1,11 @@
 package com.example.chted.chatprojet;
 
 import android.app.Application;
+import android.provider.SyncStateContract;
 
+import io.socket.client.IO;
+import java.net.URISyntaxException;
+import io.socket.client.Socket;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -15,7 +19,18 @@ public class MyApplication extends Application {
     private RegisterService registerService;
     private ReceiveMessagesService receiveMessagesService;
     private SendMessagesService sendMessagesService;
+    private Socket socket;
+    {
+        try {
+            socket = IO.socket("https://training.loicortola.com/chat-rest/2.0/ws");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public Socket getSocket() {
+        return socket;
+    }
     @Override
     public void onCreate() {
         super.onCreate();
@@ -24,6 +39,9 @@ public class MyApplication extends Application {
                 .baseUrl("https://training.loicortola.com/chat-rest/2.0/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
+
+
 
         loginService = retrofit.create(LoginService.class);
         registerService = retrofit.create(RegisterService.class);
@@ -47,4 +65,5 @@ public class MyApplication extends Application {
     public SendMessagesService getSendMessagesService() {
         return sendMessagesService;
     }
+
 }

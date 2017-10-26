@@ -23,8 +23,8 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar ;
     private EditText usernameForm ;
     private EditText passwordForm ;
+    String token;
     String username;
-    String password;
 
 
     @Override
@@ -44,8 +44,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 username = usernameForm.getText().toString();
-                password = passwordForm.getText().toString();
-                String token = Credentials.basic(username,password);
+                String password = passwordForm.getText().toString();
+                token = Credentials.basic(username,password);
                 progressBar.setVisibility(View.VISIBLE );
                 Call<ResponseBody> connect = loginService.connect(token);
                 connect.enqueue(new Callback<ResponseBody>() {
@@ -53,8 +53,9 @@ public class LoginActivity extends AppCompatActivity {
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if(response.code() == 200){
                                 Intent intent = new Intent(LoginActivity.this,ChatActivity.class);
-                                intent.putExtra("login", username);
-                                intent.putExtra("password", password);
+                                intent.putExtra("token", token);
+                                intent.putExtra("username", username);
+
                                 startActivity(intent);
                                 progressBar.setVisibility(View.INVISIBLE );
                             } else{
