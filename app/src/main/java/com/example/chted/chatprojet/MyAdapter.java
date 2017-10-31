@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import android.graphics.NinePatch;
 import com.google.gson.JsonObject;
 
 
@@ -49,7 +49,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         String login=dataset.get(position).get("login").toString();
+        login = login.replace("\"", "");
         String message=dataset.get(position).get("message").toString();
+        message = message.replace("\"", "");
         holder.textView.setText(login+" : "+message);
     }
 
