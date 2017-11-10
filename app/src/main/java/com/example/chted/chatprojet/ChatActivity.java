@@ -66,6 +66,11 @@ public class ChatActivity extends AppCompatActivity {
         MyAdapter adapter = new MyAdapter(myDataset);
         recyclerView.setAdapter(adapter);
 
+        socket.on("inbound_msg",onNewMessage);
+        socket.connect();
+
+
+
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,11 +85,10 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.code() == 200) {
-                            socket.emit("new message", json);
-                            socket.on("new message",onNewMessage);
-                            socket.connect();
+
                             messageForm.setText("");
                             Toast.makeText(ChatActivity.this, "Message envoyé", Toast.LENGTH_LONG).show();
+                            socket.emit("outbound_msg");
 
                         } else {
                             //Closes the connection.

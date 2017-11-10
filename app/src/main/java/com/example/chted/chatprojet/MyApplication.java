@@ -4,8 +4,13 @@ import android.app.Application;
 import android.provider.SyncStateContract;
 
 import io.socket.client.IO;
+
+import java.net.URI;
 import java.net.URISyntaxException;
+
+import io.socket.client.Manager;
 import io.socket.client.Socket;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -20,9 +25,35 @@ public class MyApplication extends Application {
     private ReceiveMessagesService receiveMessagesService;
     private SendMessagesService sendMessagesService;
     private Socket socket;
+    private IO.Options opts;
+
     {
         try {
-            socket = IO.socket("https://training.loicortola.com/chat-rest/2.0/ws");
+
+            /*
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .build();
+
+// default settings for all sockets
+
+// set as an option
+
+            opts = new IO.Options();
+            opts.callFactory = okHttpClient;
+            opts.webSocketFactory = okHttpClient;
+            */
+/*
+            Manager manager = new Manager(new URI("https://training.loicortola.com/"));
+            socket = manager.socket("2.0/ws");
+            */
+            Manager.Options options = new Manager.Options();
+            options.path = "/chat-rest/socket.io";
+            Manager mManager = new Manager(new URI("https://training.loicortola.com"), options);
+            socket = mManager.socket("/2.0/ws");
+
+            //socket = IO.socket("https://training.loicortola.com/chat-rest/2.0/ws",opts);
+
+
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
