@@ -11,9 +11,9 @@
         android:id="@+id/mymv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bubble"
+        android:background="@drawable/bubble4"
         android:textAlignment="gravity"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="40sp"
+        android:textSize="25sp"
         />
 </RelativeLayout>

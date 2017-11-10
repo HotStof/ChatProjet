@@ -25,4 +25,11 @@
     <string name="register">register</string>
     <string name="Send">Send</string>
     <string name="write_your_message_here">Write your message here</string>
+    <string name="PROFILE">PROFILE</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="nickname">nickname</string>
+    <string name="email">email</string>
+    <string name="userpicture">user picture</string>
+    <string name="save">save</string>
+    <string name="new_password">new password</string>
 </resources>

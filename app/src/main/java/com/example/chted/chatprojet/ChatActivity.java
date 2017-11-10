@@ -1,5 +1,6 @@
 package com.example.chted.chatprojet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,13 +26,10 @@ import retrofit2.Response;
 public class ChatActivity extends AppCompatActivity {
 
     private EditText messageForm;
-    private Button sendBtn;
     private JsonObject json;
     private  ArrayList<JsonObject> myDataset;
-    private String token;
-    private String limit;
-    private String offset;
-    private String head;
+    String token;
+    String username;
 
 
     @Override
@@ -43,7 +41,9 @@ public class ChatActivity extends AppCompatActivity {
         final Socket socket = ((MyApplication) getApplicationContext()).getSocket();
 
 
-        sendBtn = (Button) findViewById(R.id.sendbtn);
+        Button sendBtn = (Button) findViewById(R.id.sendbtn);
+        Button profileBtn = (Button) findViewById(R.id.edit_profile);
+
         messageForm = (EditText) findViewById(R.id.edit_message);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -55,21 +55,22 @@ public class ChatActivity extends AppCompatActivity {
         // specify an adapter
         myDataset = new ArrayList<>();
         token = getIntent().getStringExtra("token");
-        limit = "20";
-        offset="0";
-        head="";
+        username = getIntent().getStringExtra("username");
+        String limit = "20";
+        String offset = "0";
+        String head = "";
 
 
-        callReceiveService(receiveMessagesService,limit,offset,head,token);
+        callReceiveService(receiveMessagesService, limit, offset, head, token);
 
 
         MyAdapter adapter = new MyAdapter(myDataset);
         recyclerView.setAdapter(adapter);
+        socket.connect();
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String token = getIntent().getStringExtra("token");
                 String login = getIntent().getStringExtra("username");
                 json = new JsonObject();
                 json.addProperty("uuid", UUID.randomUUID().toString());
@@ -80,11 +81,11 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.code() == 200) {
-                            socket.emit("new message", json);
-                            socket.on("new message",onNewMessage);
-                            socket.connect();
+                            socket.emit("outbound_msg");
+
                             messageForm.setText("");
-                            Toast.makeText(ChatActivity.this, "Message envoyé", Toast.LENGTH_LONG).show();
+                            socket.on("bad_request_msg ", onNewMessage);
+                            //Toast.makeText(ChatActivity.this, "Message envoyé", Toast.LENGTH_LONG).show();
 
                         } else {
                             //Closes the connection.
@@ -104,7 +105,16 @@ public class ChatActivity extends AppCompatActivity {
 
         });
 
+        profileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
+                intent.putExtra("token", token);
+                intent.putExtra("username", username);
+                startActivity(intent);
 
+            }
+        });
     }
 
     void callReceiveService(ReceiveMessagesService receiveMessagesService, String limit, String offset, String head, String token){
@@ -113,9 +123,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<JsonObject>> call, Response<List<JsonObject>> response) {
                 if (response.code() == 200) {
-                    for (JsonObject currentJSON : response.body()) {
-                        myDataset.add(currentJSON);
-                    }
+                    myDataset.addAll(response.body());
 
 
                 } else {
@@ -138,7 +146,6 @@ public class ChatActivity extends AppCompatActivity {
     Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            args.toString();
             Toast.makeText(ChatActivity.this, "Listener OK !", Toast.LENGTH_LONG).show();
 
         }

@@ -1,8 +1,6 @@
 package com.example.chted.chatprojet;
 
 import android.app.Application;
-import android.provider.SyncStateContract;
-
 import io.socket.client.IO;
 import java.net.URISyntaxException;
 import io.socket.client.Socket;
@@ -16,6 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MyApplication extends Application {
 
     private LoginService loginService;
+    private ProfileService profileService;
     private RegisterService registerService;
     private ReceiveMessagesService receiveMessagesService;
     private SendMessagesService sendMessagesService;
@@ -44,6 +43,7 @@ public class MyApplication extends Application {
 
 
         loginService = retrofit.create(LoginService.class);
+        profileService = retrofit.create(ProfileService.class);
         registerService = retrofit.create(RegisterService.class);
         receiveMessagesService = retrofit.create(ReceiveMessagesService.class);
         sendMessagesService = retrofit.create(SendMessagesService.class);
@@ -52,6 +52,10 @@ public class MyApplication extends Application {
 
     public LoginService getLoginService() {
         return loginService;
+    }
+
+    public ProfileService getProfileService() {
+        return profileService;
     }
 
     public RegisterService getRegisterService() {
