@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,10 +13,14 @@
         android:layout_alignParentTop="true">
 
 
-        <Space
+        <Button
+            android:id="@+id/search_profile"
             android:layout_width="0dp"
+            android:layout_weight="2"
             android:layout_height="wrap_content"
-            android:layout_weight="2" />
+            android:layout_gravity="end"
+            android:background="@color/colorPrimary"
+            android:text="@string/search_user_s_profile" />
 
         <Button
             android:id="@+id/edit_profile"

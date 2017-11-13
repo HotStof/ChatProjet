@@ -20,8 +20,6 @@
     <string name="username">username</string>
     <string name="login">login</string>
     <string name="wrong_password" />
-    <string name="if_you_are_not_register_click_here">If you are not register click here</string>
-    <string name="if_you_are_already_register_click_here">if you are already register click here</string>
     <string name="register">register</string>
     <string name="Send">Send</string>
     <string name="write_your_message_here">Write your message here</string>
@@ -32,4 +30,11 @@
     <string name="userpicture">user picture</string>
     <string name="save">save</string>
     <string name="new_password">new password</string>
+    <string name="search_user_s_profile">search user\'s profile</string>
+    <string name="sign_in">sign in</string>
+    <string name="log_in">log in</string>
+    <string name="search_profile_by_username">SEARCH PROFILE BY USERNAME</string>
+    <string name="user_picture">user picture</string>
+    <string name="search_icon">search icon</string>
+    <string name="back_to_chat">back to chat</string>
 </resources>

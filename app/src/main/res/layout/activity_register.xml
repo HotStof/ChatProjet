@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:autoLink="all"
-                android:text="@string/if_you_are_already_register_click_here" />
+                android:text="@string/log_in" />
         </LinearLayout>
     </ScrollView>
     <LinearLayout

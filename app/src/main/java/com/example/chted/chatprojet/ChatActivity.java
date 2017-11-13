@@ -43,7 +43,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Button sendBtn = (Button) findViewById(R.id.sendbtn);
         Button profileBtn = (Button) findViewById(R.id.edit_profile);
-
+        Button searchProfileBtn = (Button) findViewById(R.id.search_profile);
         messageForm = (EditText) findViewById(R.id.edit_message);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -109,6 +109,17 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
+                intent.putExtra("token", token);
+                intent.putExtra("username", username);
+                startActivity(intent);
+
+            }
+        });
+
+        searchProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ChatActivity.this, SearchProfileActivity.class);
                 intent.putExtra("token", token);
                 intent.putExtra("username", username);
                 startActivity(intent);

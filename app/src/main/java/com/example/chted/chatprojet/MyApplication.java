@@ -18,6 +18,7 @@ public class MyApplication extends Application {
     private RegisterService registerService;
     private ReceiveMessagesService receiveMessagesService;
     private SendMessagesService sendMessagesService;
+    private SearchProfileService searchProfileService;
     private Socket socket;
     {
         try {
@@ -27,9 +28,7 @@ public class MyApplication extends Application {
         }
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -47,6 +46,7 @@ public class MyApplication extends Application {
         registerService = retrofit.create(RegisterService.class);
         receiveMessagesService = retrofit.create(ReceiveMessagesService.class);
         sendMessagesService = retrofit.create(SendMessagesService.class);
+        searchProfileService = retrofit.create(SearchProfileService.class);
 
     }
 
@@ -68,6 +68,12 @@ public class MyApplication extends Application {
 
     public SendMessagesService getSendMessagesService() {
         return sendMessagesService;
+    }
+
+    public SearchProfileService getSearchProfileService() {return searchProfileService; }
+
+    public Socket getSocket() {
+        return socket;
     }
 
 }
