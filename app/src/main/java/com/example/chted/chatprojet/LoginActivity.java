@@ -32,13 +32,14 @@ public class LoginActivity extends AppCompatActivity {
     String token;
     String username;
     String password;
+    LoginService loginService;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        final LoginService loginService = ((MyApplication) getApplicationContext()).getLoginService();
+        loginService = ((MyApplication) getApplicationContext()).getLoginService();
         final Socket socket = ((MyApplication) getApplicationContext()).getSocket();
 
 
@@ -78,40 +79,45 @@ public class LoginActivity extends AppCompatActivity {
                 socket.emit("auth_attempt",jsonAuth);
 
                 socket.on("auth_success",onSuccessAuth);
+
+
                 socket.on("auth_failed",onFail);
 
-
+                //il va falloir établir la connexion depuis la socket et non par le bouton.
                 token = Credentials.basic(username,password);
                 progressBar.setVisibility(View.VISIBLE );
+
                 Call<ResponseBody> connect = loginService.connect(token);
                 connect.enqueue(new Callback<ResponseBody>() {
-                        @Override
+                    @Override
 
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            if(response.code() == 200){
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code() == 200){
 
-                                Intent intent = new Intent(LoginActivity.this,ChatActivity.class);
-                                intent.putExtra("token", token);
-                                intent.putExtra("username", username);
+                            Intent intent = new Intent(LoginActivity.this,ChatActivity.class);
+                            intent.putExtra("token", token);
+                            intent.putExtra("username", username);
 
-                                startActivity(intent);
-                                progressBar.setVisibility(View.INVISIBLE );
-                            } else{
-                                //Closes the connection.
-                                String Err_message = response.message();
-                                progressBar.setVisibility(View.INVISIBLE );
-                                Toast.makeText(LoginActivity.this, Err_message, Toast.LENGTH_LONG).show();
-                            }
-
+                            startActivity(intent);
+                            progressBar.setVisibility(View.INVISIBLE );
+                        } else{
+                            //Closes the connection.
+                            String Err_message = response.message();
+                            progressBar.setVisibility(View.INVISIBLE );
+                            Toast.makeText(LoginActivity.this, Err_message, Toast.LENGTH_LONG).show();
                         }
 
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    }
 
 
-                        }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+
+                    }
                 });
+
 
             }
 
@@ -150,7 +156,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void call(final Object... args) {
 
-            Log.i("onSuccess","OK AUTHENTIFICATION");
+            Log.i("onSuccess","OK AUTHENTICATION");
 
             try {
                 JSONObject json = (JSONObject) args[0];
@@ -164,6 +170,10 @@ public class LoginActivity extends AppCompatActivity {
 
                 Log.i("onSuccess",json.getString("message"));
                 Log.i("onSuccess",json.toString());
+
+                sendRequest(token,login);
+
+
                 } catch (JSONException e) {
                     Log.e("onSuccess","ERROR !");
 
@@ -175,6 +185,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    private void sendRequest(final String token, final String login) {
+
+    }
 
 
     Emitter.Listener onFail = new Emitter.Listener() {
@@ -182,7 +195,11 @@ public class LoginActivity extends AppCompatActivity {
         public void call(final Object... args) {
             args.toString();
             //Toast.makeText(LoginActivity.this, "Listener OK ! - FAiled", Toast.LENGTH_LONG).show();
-            Log.i("onFail","FAIL");
+            String Err_message = "Failed Authentication";
+            //progressBar.setVisibility(View.INVISIBLE );
+            Toast.makeText(LoginActivity.this, Err_message, Toast.LENGTH_LONG).show();
+
+            Log.i("onFail","FAIL AUTHENTICATION");
 
         }
     };

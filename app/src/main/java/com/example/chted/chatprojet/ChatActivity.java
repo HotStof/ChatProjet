@@ -4,12 +4,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +55,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
@@ -142,8 +148,37 @@ public class ChatActivity extends AppCompatActivity {
     Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            args.toString();
-            Toast.makeText(ChatActivity.this, "Listener OK !", Toast.LENGTH_LONG).show();
+            Log.i("onNewMessage","Message reçu");
+
+            try {
+                JSONObject json = (JSONObject) args[0];
+                String login;
+                String uuid;
+                String message;
+                //String images;
+
+                login = json.getString("login");
+                uuid = json.getString("uuid");
+                message = json.getString("message");
+                //pas sûre que le get JSON marche ainsi :o
+                //attachement = json.getJSONObject("attachement");
+                //images = json.getString("images");
+
+                Log.i("onNewMessage",json.getString("message"));
+                Log.i("onNewMessage",json.toString());
+
+
+
+
+                JsonParser jsonParser = new JsonParser();
+                JsonObject jsonToView = (JsonObject)jsonParser.parse(json.toString());
+                finish();
+                startActivity(getIntent());
+
+            } catch (JSONException e) {
+                Log.e("onNewMessage","ERROR !");
+
+            }
 
         }
     };
