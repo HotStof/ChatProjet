@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.chted.chatprojet.RegisterActivity">
+    tools:context="com.example.chted.chatprojet.ProfileActivity">
 
     <TextView
         android:id="@+id/header1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/register"
+        android:text="@string/edit_profile"
         android:textAlignment="center"
         android:layout_margin="20dp"
         android:textColor="@color/colorPrimary"
-        android:textSize="30dp"/>
+        android:textSize="30sp"/>
 
     <ScrollView
         android:id="@+id/content1"
@@ -29,46 +29,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-            <TextView
-                android:id="@+id/textview_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/username"
-                android:textColor="@color/colorPrimary"/>
-
-            <EditText
-                android:id="@+id/edit_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
-
 
             <TextView
                 android:id="@+id/textview_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/password"
+                android:text="@string/new_password"
                 android:textColor="@color/colorPrimary"/>
+
+
 
             <EditText
                 android:id="@+id/edit_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"/>
-            <ProgressBar
-                android:id="@+id/progbar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:visibility="invisible"/>
+                android:inputType="textPassword"
+                tools:ignore="LabelFor" />
 
-            <Button
-                android:id="@+id/registerbtn"
+
+            <TextView
+                android:id="@+id/textview_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:autoLink="all"
-                android:text="@string/log_in" />
+                android:text="@string/email"
+                android:textColor="@color/colorPrimary"/>
+
+            <EditText
+                android:id="@+id/edit_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                tools:ignore="LabelFor" />
+
+            <TextView
+                android:id="@+id/textview_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/userpicture"
+                android:textColor="@color/colorPrimary"/>
+
+            <ImageButton
+                android:id="@+id/edit_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/userpicture"
+                android:src="@drawable/default_user" />
+
+
+
         </LinearLayout>
     </ScrollView>
     <LinearLayout
@@ -79,24 +88,22 @@
         android:layout_alignParentBottom="true">
 
         <Button
-            android:id="@+id/submitbtn"
+            android:id="@+id/savebtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/colorAccent"
-            android:text="@string/submit" />
+            android:text="@string/save" />
 
-        <Button
-            android:id="@+id/clearbtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:text="@string/clear"/>
+
 
 
 
 
     </LinearLayout>
 
+
+
+
 </RelativeLayout>
+

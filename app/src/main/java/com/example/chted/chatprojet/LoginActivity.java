@@ -23,9 +23,6 @@ import retrofit2.Response;
 
 
 public class LoginActivity extends AppCompatActivity {
-    private Button submitBtn;
-    private Button registerBtn;
-    private Button clearBtn ;
     private ProgressBar progressBar ;
     private EditText usernameForm ;
     private EditText passwordForm ;
@@ -43,9 +40,9 @@ public class LoginActivity extends AppCompatActivity {
         final Socket socket = ((MyApplication) getApplicationContext()).getSocket();
 
 
-        registerBtn = (Button) findViewById(R.id.registerbtn);
-        submitBtn = (Button) findViewById(R.id.submitbtn);
-        clearBtn = (Button) findViewById(R.id.clearbtn);
+        Button registerBtn = (Button) findViewById(R.id.registerbtn);
+        Button submitBtn = (Button) findViewById(R.id.submitbtn);
+        Button clearBtn = (Button) findViewById(R.id.clearbtn);
         progressBar = (ProgressBar) findViewById(R.id.progbar);
         usernameForm = (EditText) findViewById(R.id.edit_username);
         passwordForm = (EditText) findViewById(R.id.edit_password);

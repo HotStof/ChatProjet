@@ -1,8 +1,6 @@
 package com.example.chted.chatprojet;
 
 import android.app.Application;
-import android.provider.SyncStateContract;
-
 import io.socket.client.IO;
 
 import java.net.URI;
@@ -21,9 +19,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MyApplication extends Application {
 
     private LoginService loginService;
+    private ProfileService profileService;
     private RegisterService registerService;
     private ReceiveMessagesService receiveMessagesService;
     private SendMessagesService sendMessagesService;
+    private SearchProfileService searchProfileService;
     private Socket socket;
     private IO.Options opts;
 
@@ -41,9 +41,7 @@ public class MyApplication extends Application {
         }
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -57,14 +55,20 @@ public class MyApplication extends Application {
 
 
         loginService = retrofit.create(LoginService.class);
+        profileService = retrofit.create(ProfileService.class);
         registerService = retrofit.create(RegisterService.class);
         receiveMessagesService = retrofit.create(ReceiveMessagesService.class);
         sendMessagesService = retrofit.create(SendMessagesService.class);
+        searchProfileService = retrofit.create(SearchProfileService.class);
 
     }
 
     public LoginService getLoginService() {
         return loginService;
+    }
+
+    public ProfileService getProfileService() {
+        return profileService;
     }
 
     public RegisterService getRegisterService() {
@@ -77,6 +81,12 @@ public class MyApplication extends Application {
 
     public SendMessagesService getSendMessagesService() {
         return sendMessagesService;
+    }
+
+    public SearchProfileService getSearchProfileService() {return searchProfileService; }
+
+    public Socket getSocket() {
+        return socket;
     }
 
 }

@@ -52,7 +52,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         login = login.replace("\"", "");
         String message=dataset.get(position).get("message").toString();
         message = message.replace("\"", "");
-        holder.textView.setText(login+" : "+message);
+        holder.textView.setText(String.format("%s : %s", login, message));
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

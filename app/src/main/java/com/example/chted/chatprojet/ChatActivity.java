@@ -1,5 +1,6 @@
 package com.example.chted.chatprojet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,13 +31,10 @@ import retrofit2.Response;
 public class ChatActivity extends AppCompatActivity {
 
     private EditText messageForm;
-    private Button sendBtn;
     private JsonObject json;
     private  ArrayList<JsonObject> myDataset;
-    private String token;
-    private String limit;
-    private String offset;
-    private String head;
+    String token;
+    String username;
 
 
     @Override
@@ -48,7 +46,9 @@ public class ChatActivity extends AppCompatActivity {
         final Socket socket = ((MyApplication) getApplicationContext()).getSocket();
 
 
-        sendBtn = (Button) findViewById(R.id.sendbtn);
+        Button sendBtn = (Button) findViewById(R.id.sendbtn);
+        Button profileBtn = (Button) findViewById(R.id.edit_profile);
+        Button searchProfileBtn = (Button) findViewById(R.id.search_profile);
         messageForm = (EditText) findViewById(R.id.edit_message);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -61,16 +61,18 @@ public class ChatActivity extends AppCompatActivity {
         // specify an adapter
         myDataset = new ArrayList<>();
         token = getIntent().getStringExtra("token");
-        limit = "20";
-        offset="0";
-        head="";
+        username = getIntent().getStringExtra("username");
+        String limit = "20";
+        String offset = "0";
+        String head = "";
 
 
-        callReceiveService(receiveMessagesService,limit,offset,head,token);
+        callReceiveService(receiveMessagesService, limit, offset, head, token);
 
 
         MyAdapter adapter = new MyAdapter(myDataset);
         recyclerView.setAdapter(adapter);
+        socket.connect();
 
         socket.on("inbound_msg",onNewMessage);
         socket.connect();
@@ -80,7 +82,6 @@ public class ChatActivity extends AppCompatActivity {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String token = getIntent().getStringExtra("token");
                 String login = getIntent().getStringExtra("username");
                 json = new JsonObject();
                 json.addProperty("uuid", UUID.randomUUID().toString());
@@ -91,7 +92,6 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.code() == 200) {
-
                             messageForm.setText("");
                             Toast.makeText(ChatActivity.this, "Message envoyé", Toast.LENGTH_LONG).show();
                             socket.emit("outbound_msg");
@@ -114,7 +114,27 @@ public class ChatActivity extends AppCompatActivity {
 
         });
 
+        profileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
+                intent.putExtra("token", token);
+                intent.putExtra("username", username);
+                startActivity(intent);
 
+            }
+        });
+
+        searchProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ChatActivity.this, SearchProfileActivity.class);
+                intent.putExtra("token", token);
+                intent.putExtra("username", username);
+                startActivity(intent);
+
+            }
+        });
     }
 
     void callReceiveService(ReceiveMessagesService receiveMessagesService, String limit, String offset, String head, String token){
@@ -123,9 +143,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<JsonObject>> call, Response<List<JsonObject>> response) {
                 if (response.code() == 200) {
-                    for (JsonObject currentJSON : response.body()) {
-                        myDataset.add(currentJSON);
-                    }
+                    myDataset.addAll(response.body());
 
 
                 } else {
