@@ -5,12 +5,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +55,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // use a linear layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter
@@ -68,6 +74,11 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         socket.connect();
 
+        socket.on("inbound_msg",onNewMessage);
+        socket.connect();
+
+
+
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,11 +92,9 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.code() == 200) {
-                            socket.emit("outbound_msg");
-
                             messageForm.setText("");
-                            socket.on("bad_request_msg ", onNewMessage);
-                            //Toast.makeText(ChatActivity.this, "Message envoyé", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ChatActivity.this, "Message envoyé", Toast.LENGTH_LONG).show();
+                            socket.emit("outbound_msg");
 
                         } else {
                             //Closes the connection.
@@ -157,7 +166,37 @@ public class ChatActivity extends AppCompatActivity {
     Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            Toast.makeText(ChatActivity.this, "Listener OK !", Toast.LENGTH_LONG).show();
+            Log.i("onNewMessage","Message reçu");
+
+            try {
+                JSONObject json = (JSONObject) args[0];
+                String login;
+                String uuid;
+                String message;
+                //String images;
+
+                login = json.getString("login");
+                uuid = json.getString("uuid");
+                message = json.getString("message");
+                //pas sûre que le get JSON marche ainsi :o
+                //attachement = json.getJSONObject("attachement");
+                //images = json.getString("images");
+
+                Log.i("onNewMessage",json.getString("message"));
+                Log.i("onNewMessage",json.toString());
+
+
+
+
+                JsonParser jsonParser = new JsonParser();
+                JsonObject jsonToView = (JsonObject)jsonParser.parse(json.toString());
+                finish();
+                startActivity(getIntent());
+
+            } catch (JSONException e) {
+                Log.e("onNewMessage","ERROR !");
+
+            }
 
         }
     };

@@ -2,8 +2,13 @@ package com.example.chted.chatprojet;
 
 import android.app.Application;
 import io.socket.client.IO;
+
+import java.net.URI;
 import java.net.URISyntaxException;
+
+import io.socket.client.Manager;
 import io.socket.client.Socket;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -20,9 +25,17 @@ public class MyApplication extends Application {
     private SendMessagesService sendMessagesService;
     private SearchProfileService searchProfileService;
     private Socket socket;
+    private IO.Options opts;
+
     {
         try {
-            socket = IO.socket("https://training.loicortola.com/chat-rest/2.0/ws");
+
+
+            Manager.Options options = new Manager.Options();
+            options.path = "/chat-rest/socket.io";
+            Manager mManager = new Manager(new URI("https://training.loicortola.com"), options);
+            socket = mManager.socket("/2.0/ws");
+
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
