@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +34,9 @@ public class ChatActivity extends AppCompatActivity {
     private  ArrayList<JsonObject> myDataset;
     String token;
     String username;
+    String limit = "100";
+    String offset = "0";
+    String head = "";
 
 
     @Override
@@ -62,20 +64,15 @@ public class ChatActivity extends AppCompatActivity {
         myDataset = new ArrayList<>();
         token = getIntent().getStringExtra("token");
         username = getIntent().getStringExtra("username");
-        String limit = "20";
-        String offset = "0";
-        String head = "";
+
+        socket.connect();
+        socket.on("inbound_msg",onNewMessage);
+        MyAdapter adapter = new MyAdapter(myDataset);
+        recyclerView.setAdapter(adapter);
+
 
 
         callReceiveService(receiveMessagesService, limit, offset, head, token);
-
-
-        MyAdapter adapter = new MyAdapter(myDataset);
-        recyclerView.setAdapter(adapter);
-        socket.connect();
-
-        socket.on("inbound_msg",onNewMessage);
-        socket.connect();
 
 
 
@@ -121,6 +118,7 @@ public class ChatActivity extends AppCompatActivity {
                 intent.putExtra("token", token);
                 intent.putExtra("username", username);
                 startActivity(intent);
+                socket.close();
 
             }
         });
@@ -132,9 +130,12 @@ public class ChatActivity extends AppCompatActivity {
                 intent.putExtra("token", token);
                 intent.putExtra("username", username);
                 startActivity(intent);
+                socket.close();
 
             }
         });
+
+
     }
 
     void callReceiveService(ReceiveMessagesService receiveMessagesService, String limit, String offset, String head, String token){
@@ -184,14 +185,12 @@ public class ChatActivity extends AppCompatActivity {
 
                 Log.i("onNewMessage",json.getString("message"));
                 Log.i("onNewMessage",json.toString());
-
-
-
-
-                JsonParser jsonParser = new JsonParser();
-                JsonObject jsonToView = (JsonObject)jsonParser.parse(json.toString());
-                finish();
-                startActivity(getIntent());
+                Intent intent = new Intent(ChatActivity.this, ChatActivity.class);
+                intent.putExtra("token", token);
+                intent.putExtra("username", username);
+                startActivity(intent);
+                //finish();
+                //startActivity(getIntent());
 
             } catch (JSONException e) {
                 Log.e("onNewMessage","ERROR !");

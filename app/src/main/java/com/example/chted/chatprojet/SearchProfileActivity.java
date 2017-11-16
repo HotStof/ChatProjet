@@ -1,38 +1,28 @@
 package com.example.chted.chatprojet;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
-import okhttp3.Credentials;
+import java.io.IOException;
+
+import java.util.ArrayList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +36,6 @@ public class SearchProfileActivity extends AppCompatActivity {
     private ImageView userImage;
     private String username;
     private String token;
-    private ArrayList<JsonObject> myDataset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,30 +54,38 @@ public class SearchProfileActivity extends AppCompatActivity {
         BackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SearchProfileActivity.this,ChatActivity.class);
+                Intent intent = new Intent(SearchProfileActivity.this, ChatActivity.class);
                 intent.putExtra("token", token);
                 intent.putExtra("username", username);
                 startActivity(intent);
 
-            }});
+            }
+        });
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String login_searched = searchUserForm.getText().toString();
-                Call<ResponseBody> search = searchProfileService.search(token,login_searched);
+                Call<ResponseBody> search = searchProfileService.search(token, login_searched);
                 search.enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(Call<ResponseBody> call,  Response<ResponseBody> response) {
-                        if(response.code() == 200){
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.code() == 200) {
                             JSONObject json = null;
                             try {
+                                if(userImage != null) {
+                                    Glide.with(getApplicationContext()).clear(userImage);
+                                }
                                 json = new JSONObject(response.body().string());
                                 login.setText(String.format("login : %s", json.getString("login")));
                                 email.setText(String.format("email : %s", json.getString("email")));
-                                Uri ImageUri = Uri.parse(json.getString("picture"));
-                                userImage.setImageURI(ImageUri);
+                                String image = json.getString("picture");
+                                if(image != null) {
+                                    GlideUrl glideUrl = new GlideUrl(image, new LazyHeaders.Builder().addHeader("Authorization", token).build());
+                                    GlideApp.with(getApplicationContext()).load(glideUrl).into(userImage);
+                                }
+
 
 
                             } catch (JSONException | IOException e) {
@@ -96,7 +93,7 @@ public class SearchProfileActivity extends AppCompatActivity {
                             }
 
 
-                        } else{
+                        } else {
                             //Closes the connection.
                             String Err_message = response.message();
                             Toast.makeText(SearchProfileActivity.this, Err_message, Toast.LENGTH_LONG).show();
@@ -113,9 +110,6 @@ public class SearchProfileActivity extends AppCompatActivity {
             }
 
         });
-
-
-
-
     }
+
 }
