@@ -1,7 +1,10 @@
 package com.example.chted.chatprojet;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,34 +36,42 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.PendingIntent.getActivity;
+
 public class ChatActivity extends AppCompatActivity {
 
+    private MyAdapter adapter;
+    RecyclerView recyclerView;
     private EditText messageForm;
     private JsonObject json;
     private  ArrayList<JsonObject> myDataset;
+    private Socket socket;
+    private Runnable runnable;
     String token;
     String tokenSocket;
+    String login;
     String username;
     TextView notifText;
+    String uuid;
+    String limit = "100";
+    String offset = "0";
+    String head = "";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_chat);
-
         final ReceiveMessagesService receiveMessagesService = ((MyApplication) getApplicationContext()).getReceiveMessagesService();
         final SendMessagesService sendMessagesService = ((MyApplication) getApplicationContext()).getSendMessagesService();
-        final Socket socket = ((MyApplication) getApplicationContext()).getSocket();
-        socket.connect();
+        socket = ((MyApplication) getApplicationContext()).getSocket();
 
         notifText = (TextView) findViewById(R.id.isWritting);
         Button sendBtn = (Button) findViewById(R.id.sendbtn);
         Button profileBtn = (Button) findViewById(R.id.edit_profile);
         Button searchProfileBtn = (Button) findViewById(R.id.search_profile);
         messageForm = (EditText) findViewById(R.id.edit_message);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
@@ -70,22 +83,13 @@ public class ChatActivity extends AppCompatActivity {
         myDataset = new ArrayList<>();
         token = getIntent().getStringExtra("token");
         username = getIntent().getStringExtra("username");
-        tokenSocket=getIntent().getStringExtra("tokenSocket");
-        String limit = "20";
-        String offset = "0";
-        String head = "";
-
-
-
-
-
-        MyAdapter adapter = new MyAdapter(myDataset);
-        recyclerView.setAdapter(adapter);
         callReceiveService(receiveMessagesService, limit, offset, head, token);
+        socket.on("inbound_msg", onNewMessage);
+        socket.on("post_success_msg ",onNewMessage);
+        socket.connect();
 
-        socket.on("inbound_msg",onNewMessage);
-        socket.on("user_typing_inbound_msg",onWriteMessage);
-
+        //adapter = new MyAdapter(myDataset);
+        //recyclerView.setAdapter(adapter);
 /*
 
         messageForm.setOnKeyListener(new View.OnKeyListener() {
@@ -107,7 +111,7 @@ public class ChatActivity extends AppCompatActivity {
 
             }
 
-    });*/
+    });*//*
         messageForm.addTextChangedListener(new TextWatcher(){
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after){
@@ -136,14 +140,16 @@ public class ChatActivity extends AppCompatActivity {
                 // do nothing
             }
         });
+        */
 
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String login = getIntent().getStringExtra("username");
+                login = getIntent().getStringExtra("username");
                 json = new JsonObject();
-                json.addProperty("uuid", UUID.randomUUID().toString());
+                uuid = UUID.randomUUID().toString();
+                json.addProperty("uuid", uuid);
                 json.addProperty("login", login);
                 json.addProperty("message", messageForm.getText().toString());
                 Call<ResponseBody> connect = sendMessagesService.send(token, json);
@@ -153,7 +159,18 @@ public class ChatActivity extends AppCompatActivity {
                         if (response.code() == 200) {
                             messageForm.setText("");
                             Toast.makeText(ChatActivity.this, "Message envoyé", Toast.LENGTH_LONG).show();
-                            JSONObject jsonMsg=new JSONObject();
+                            JsonObject jsonresp = new JsonObject();
+                            jsonresp.addProperty("login",login);
+                            jsonresp.addProperty("token",token);
+                            jsonresp.addProperty("uuid",uuid);
+                            jsonresp.addProperty("message",messageForm.getText().toString());
+                            jsonresp.addProperty("attachments","");
+                            socket.emit("outbound_msg",jsonresp);
+
+
+                            /// OLD VERSION :
+                            /*
+                             JSONObject jsonMsg=new JSONObject();
                             try {
                                 jsonMsg.put("login",json.get("login").getAsString());
                                 jsonMsg.put("uuid", json.get("uuid").getAsString());
@@ -167,6 +184,9 @@ public class ChatActivity extends AppCompatActivity {
                             socket.emit("outbound_msg",jsonMsg);
                             socket.on("post_success_msg",onPostSuccess);
                             socket.on("bad_request_msg",onPostFail);
+
+                             */
+
 
                         } else {
                             //Closes the connection.
@@ -209,7 +229,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     void callReceiveService(ReceiveMessagesService receiveMessagesService, String limit, String offset, String head, String token){
@@ -219,6 +238,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onResponse(Call<List<JsonObject>> call, Response<List<JsonObject>> response) {
                 if (response.code() == 200) {
                     myDataset.addAll(response.body());
+                    adapter = new MyAdapter(myDataset);
+                    recyclerView.setAdapter(adapter);
 
 
                 } else {
@@ -236,14 +257,14 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
-
-
     }
 
     Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+            //My version
+
+            /*
             Log.i("onNewMessage","Message reçu");
 
             try {
@@ -269,10 +290,49 @@ public class ChatActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 Log.e("onNewMessage","ERROR !");
 
-            }
+             }             */
 
+            ChatActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String username;
+                    String message;
+                    try {
+                        username = data.getString("login");
+                        message = data.getString("message");
+                    } catch (JSONException e) {
+                        return;
+                    }
+
+                    // add the message to view
+                    addMessage(username, message);
+                }
+            });
         }
     };
+
+    private void addMessage(String name,String message){
+        System.out.println("Message reçu de :" + name + "\tMessage :" + message);
+         JsonObject json = new JsonObject();
+
+        json.addProperty("login",name);
+        json.addProperty("message",message);;
+
+        adapter.add(json);
+
+        recyclerView.setAdapter(adapter);
+    }
+
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//
+//        socket.disconnect();
+//    }
+
+
+
 
 
 

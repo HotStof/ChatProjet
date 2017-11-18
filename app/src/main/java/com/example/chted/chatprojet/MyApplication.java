@@ -1,6 +1,10 @@
 package com.example.chted.chatprojet;
 
 import android.app.Application;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+
 import io.socket.client.IO;
 
 import java.net.URI;
@@ -50,6 +54,8 @@ public class MyApplication extends Application {
                 .baseUrl("https://training.loicortola.com/chat-rest/2.0/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
+
 
 
 

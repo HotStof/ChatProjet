@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -46,7 +49,8 @@ public class ProfileActivity extends AppCompatActivity {
     public static final int IMAGE_GALLERY_REQUEST = 20;
     private ImageView imgPicture;
     private String pictureMimeType = "image/jpeg";
-    private String pictureUri = "";
+    private String pictureData = "";
+    private Bitmap image;
 
 
     @Override
@@ -91,11 +95,22 @@ public class ProfileActivity extends AppCompatActivity {
                 token = getIntent().getStringExtra("token");
                 json = new JsonObject();
                 json.addProperty("password", password);
+
                 json.addProperty("email", email);
+
                 picture = new JsonObject();
-                picture.addProperty("mimeType",pictureMimeType);
-                picture.addProperty("data",pictureUri);
+
+                ByteArrayOutputStream byteArrayImage = new ByteArrayOutputStream();
+                if(image != null) {
+                    image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayImage);
+
+                    byte[] byteImage = byteArrayImage.toByteArray();
+                    pictureData = Base64.encodeToString(byteImage, Base64.DEFAULT);
+                }
+                picture.addProperty("mimeType", "image/jpeg");
+                picture.addProperty("data", pictureData);
                 json.add("picture", picture);
+
                 Call<ResponseBody> connect = profileService.edit(token, json);
                 connect.enqueue(new Callback<ResponseBody>() {
                     @Override
@@ -139,21 +154,16 @@ public class ProfileActivity extends AppCompatActivity {
 
                 // the address of the image on the SD Card.
                 Uri imageUri = data.getData();
-                pictureUri = imageUri.toString();
                 // declare a stream to read the image data from the SD Card.
                 InputStream inputStream;
 
                 // we are getting an input stream, based on the URI of the image.
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
-
-                    // get a bitmap from the stream.
-                    Bitmap image = BitmapFactory.decodeStream(inputStream);
-
                     // show the image to the user
-                    imgPicture.setImageBitmap(image);
-                    ContentResolver cR = ProfileActivity.this.getContentResolver();
-                    pictureMimeType = cR.getType(imageUri);
+                    imgPicture.setImageURI(imageUri);
+
+                    image = BitmapFactory.decodeStream(inputStream);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
