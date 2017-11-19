@@ -38,4 +38,6 @@
     <string name="search_icon">search icon</string>
     <string name="back_to_chat">back to chat</string>
     <string name="user_image">user image</string>
+    <string name="register_click">click here to register</string>
+    <string name="i_m_already_registered">I\'m already registered</string>
 </resources>

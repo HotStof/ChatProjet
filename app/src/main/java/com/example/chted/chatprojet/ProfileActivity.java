@@ -1,7 +1,6 @@
 package com.example.chted.chatprojet;
 
-import android.content.ContentResolver;
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,23 +10,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
-
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.UUID;
 
 import okhttp3.Credentials;
 import okhttp3.ResponseBody;
@@ -39,7 +33,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private EditText passwordForm ;
     private EditText emailForm ;
-    private ImageButton profileImage ;
     Button saveBtn;
     String email;
     String password;
@@ -161,9 +154,9 @@ public class ProfileActivity extends AppCompatActivity {
                 try {
                     inputStream = getContentResolver().openInputStream(imageUri);
                     // show the image to the user
-                    imgPicture.setImageURI(imageUri);
-
                     image = BitmapFactory.decodeStream(inputStream);
+                    imgPicture.setImageBitmap(image);
+
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

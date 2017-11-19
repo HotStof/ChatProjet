@@ -12,9 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
-import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,16 +74,18 @@ public class SearchProfileActivity extends AppCompatActivity {
                         if (response.code() == 200) {
                             JSONObject json = null;
                             try {
-                                if(userImage != null) {
-                                    Glide.with(getApplicationContext()).clear(userImage);
-                                }
+                                Glide.with(getApplicationContext()).clear(userImage);
+                                login.setText("");
+                                email.setText("");
                                 json = new JSONObject(response.body().string());
                                 login.setText(String.format("login : %s", json.getString("login")));
                                 email.setText(String.format("email : %s", json.getString("email")));
                                 String image = json.getString("picture");
                                 if(image != null) {
                                     GlideUrl glideUrl = new GlideUrl(image, new LazyHeaders.Builder().addHeader("Authorization", token).build());
-                                    GlideApp.with(getApplicationContext()).load(glideUrl).into(userImage);
+
+                                    GlideApp.with(getApplicationContext()).load(glideUrl).placeholder(R.drawable.default_user)
+                                            .fitCenter().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into(userImage);
                                 }
 
 
