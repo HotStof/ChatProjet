@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameForm ;
     private EditText passwordForm ;
     String token;
+    String tokenSocket="";
     String username;
     String password;
     LoginService loginService;
@@ -94,8 +95,10 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(LoginActivity.this,ChatActivity.class);
                             intent.putExtra("token", token);
                             intent.putExtra("username", username);
+                            intent.putExtra("tokenSocket",tokenSocket);
 
                             startActivity(intent);
+                            socket.disconnect();
                             progressBar.setVisibility(View.INVISIBLE );
                         } else{
                             //Closes the connection.
@@ -135,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
                 startActivity(intent);
+
             }
 
         });
@@ -158,11 +162,11 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 JSONObject json = (JSONObject) args[0];
                 String login;
-                String token;
+               // String token;
                 String message;
 
                     login = json.getString("login");
-                    token = json.getString("token");
+                    tokenSocket = json.getString("token");
                     message = json.getString("message");
 
                 Log.i("onSuccess",json.getString("message"));
